@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dora - Diet Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0;
+           display: flex; justify-content: center; align-items: center; height: 100vh; }
+    #chat-container { width: 400px; height: 600px; background: #fff; border-radius: 10px;
+                      box-shadow: 0 0 10px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; }
+    #chat-header { display: flex; align-items: center; padding: 10px;
+                   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; font-weight: bold; }
+    #chat-header img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
+    #status { margin-left: auto; font-size: 14px; display: flex; align-items: center; }
+    #status-dot { width: 10px; height: 10px; background: #00ff00; border-radius: 50%; margin-right: 6px; }
+    #chat-box { flex: 1; padding: 12px; overflow-y: auto; border-bottom: 1px solid #ddd; }
+    .message { margin: 6px 0; padding: 10px 14px; border-radius: 15px; max-width: 70%; }
+    .user { background: #4CAF50; color: #fff; align-self: flex-end; }
+    .bot { background: #e0e0e0; color: #000; align-self: flex-start; display: flex; align-items: center; }
+    .bot img { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; }
+    #input-area { display: flex; padding: 10px; background: #fafafa; }
+    #user-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 15px; }
+    #send-btn { margin-left: 10px; padding: 8px 14px; background: #4CAF50; color: white; border: none; border-radius: 15px; cursor: pointer; }
+    #services { padding: 12px; background: #f9f9f9; border-top: 1px solid #ddd; }
+    #services h3 { margin: 0 0 10px; color: #2575fc; }
+    #services ul { list-style: none; padding: 0; }
+    #services li { margin: 6px 0; font-size: 14px; }
+  
+  .message p {
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+  </style>
+</head>
+<body>
+<div id="chat-container">
+  <!-- Header -->
+  <div id="chat-header">
+    <img src="/static/images.jpg" alt="Diet Assistant">
+    <span>Dora</span>
+    <div id="status"><div id="status-dot"></div><span>Online</span></div>
+  </div>
+
+  <!-- Chat messages -->
+  <div id="chat-box"></div>
+
+  <!-- Input area -->
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Ask Dora something..." autocomplete="off">
+    <button id="send-btn">Send</button>
+  </div>
+
+  <!-- Services -->
+  <div id="services">
+    <h3>Services Dora Provides</h3>
+    <ul>
+      <li>🍽 Personalized Meal Plans</li>
+      <li>📊 Nutrition Facts & Calorie Check</li>
+      <li>🩺 Disease-Specific Diet Guidance</li>
+      <li>💡 Healthy Eating Tips</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  const chatBox = document.getElementById("chat-box");
+  const userInput = document.getElementById("user-input");
+  const sendBtn = document.getElementById("send-btn");
+
+  function addMessage(content, className) {
+  const msg = document.createElement("div");
+  msg.className = "message " + className;
+
+  if (className === "bot") {
+    const avatar = document.createElement("img");
+    avatar.src = "/static/images.jpg";
+    msg.appendChild(avatar);
+  }
+
+  // Split long responses into paragraphs
+  const parts = content.split(/\n+/); // split by newlines
+  parts.forEach(part => {
+    const text = document.createElement("p");
+    text.textContent = part.trim();
+    msg.appendChild(text);
+  });
+
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+  async function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text) return;
+    addMessage(text, "user");
+    userInput.value = "";
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await response.json();
+
+      if (data.reply) {
+        addMessage("Dora: " + data.reply, "bot");
+      } else if (data.error) {
+        addMessage("Dora: Error - " + data.error, "bot");
+      } else {
+        addMessage("Dora: Sorry, I couldn’t process that request.", "bot");
+      }
+    } catch (err) {
+      addMessage("Dora: Error - " + err.message, "bot");
+    }
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+  // Allow pressing Enter to send message
+userInput.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault(); // prevent newline
+    sendMessage();
+  }
+});
+
+</script>
+</body>
+</html>
