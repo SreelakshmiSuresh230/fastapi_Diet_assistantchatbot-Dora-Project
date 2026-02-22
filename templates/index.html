@@ -1,132 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dora - Diet Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0;
-           display: flex; justify-content: center; align-items: center; height: 100vh; }
-    #chat-container { width: 400px; height: 600px; background: #fff; border-radius: 10px;
-                      box-shadow: 0 0 10px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; }
-    #chat-header { display: flex; align-items: center; padding: 10px;
-                   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; font-weight: bold; }
-    #chat-header img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
-    #status { margin-left: auto; font-size: 14px; display: flex; align-items: center; }
-    #status-dot { width: 10px; height: 10px; background: #00ff00; border-radius: 50%; margin-right: 6px; }
-    #chat-box { flex: 1; padding: 12px; overflow-y: auto; border-bottom: 1px solid #ddd; }
-    .message { margin: 6px 0; padding: 10px 14px; border-radius: 15px; max-width: 70%; }
-    .user { background: #4CAF50; color: #fff; align-self: flex-end; }
-    .bot { background: #e0e0e0; color: #000; align-self: flex-start; display: flex; align-items: center; }
-    .bot img { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; }
-    #input-area { display: flex; padding: 10px; background: #fafafa; }
-    #user-input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 15px; }
-    #send-btn { margin-left: 10px; padding: 8px 14px; background: #4CAF50; color: white; border: none; border-radius: 15px; cursor: pointer; }
-    #services { padding: 12px; background: #f9f9f9; border-top: 1px solid #ddd; }
-    #services h3 { margin: 0 0 10px; color: #2575fc; }
-    #services ul { list-style: none; padding: 0; }
-    #services li { margin: 6px 0; font-size: 14px; }
-  
-  .message p {
-  margin: 4px 0;
-  line-height: 1.4;
-}
 
-  </style>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
-<div id="chat-container">
-  <!-- Header -->
-  <div id="chat-header">
-    <img src="/static/images.jpg" alt="Diet Assistant">
-    <span>Dora</span>
-    <div id="status"><div id="status-dot"></div><span>Online</span></div>
-  </div>
-
-  <!-- Chat messages -->
-  <div id="chat-box"></div>
-
-  <!-- Input area -->
-  <div id="input-area">
-    <input type="text" id="user-input" placeholder="Ask Dora something..." autocomplete="off">
-    <button id="send-btn">Send</button>
-  </div>
-
-  <!-- Services -->
-  <div id="services">
-    <h3>Services Dora Provides</h3>
+  <!-- Navbar -->
+  <nav>
+    <h1 class="nav-title">Dora The Diet Assistant</h1>
     <ul>
-      <li>🍽 Personalized Meal Plans</li>
-      <li>📊 Nutrition Facts & Calorie Check</li>
-      <li>🩺 Disease-Specific Diet Guidance</li>
-      <li>💡 Healthy Eating Tips</li>
+      <li><a href="#">🍽 Personalized Diet Plans</a></li>
+      <li><a href="#">📊 Nutrition Tracking</a></li>
+      <li><a href="#">🍎 Healthy Recipes</a></li>
+      <li><a href="#">🤝 Patient Diet Plans</a></li>
     </ul>
+  </nav>
+
+  <!-- Carousel -->
+  <div class="carousel">
+    <button class="prev">❮</button>
+    <div class="slides">
+      <img src="/static/dora1.png" class="slide active" alt="Diet Assistant Slide 1">
+      <img src="/static/dora2.png" class="slide" alt="Diet Assistant Slide 2">
+      <img src="/static/dora3.png" class="slide" alt="Diet Assistant Slide 3">
+    </div>
+    <button class="next">❯</button>
   </div>
-</div>
 
-<script>
-  const chatBox = document.getElementById("chat-box");
-  const userInput = document.getElementById("user-input");
-  const sendBtn = document.getElementById("send-btn");
+  <!-- Main Section: Chat + Services -->
+  <div class="main-section">
+    <!-- Chat Bot -->
+    <div class="chat-container">
+      <div class="header">
+        <img src="/static/dora.png" alt="Dora Avatar" class="avatar" />
+        <h1>Dora</h1>
+        <span class="status">🟢 Online</span>
+      </div>
 
-  function addMessage(content, className) {
+      <!-- Chat box -->
+      <div id="chat-box" class="chat-box">
+        {% if bot_response %}
+          <div class="bot-msg">
+            {{ bot_response | safe }}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Input form -->
+      <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Ask Dora about your diet..." required />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <!-- Services Section -->
+    <div class="services-section">
+      <h2>Services Dora Provides</h2>
+      <div class="services-list">
+        <div class="service-item">
+          <div class="icon">🍽</div>
+          <h3>Personalized Meal Plans</h3>
+          <p>Custom diet plans tailored to your health needs.</p>
+        </div>
+        <div class="service-item">
+          <div class="icon">📊</div>
+          <h3>Nutrition Facts</h3>
+          <p>Check calories, macros, and nutrition values easily.</p>
+        </div>
+        <div class="service-item">
+          <div class="icon">🩺</div>
+          <h3>Disease-Specific Guidance</h3>
+          <p>Diet recommendations for conditions like PCOS, diabetes, and more.</p>
+        </div>
+        <div class="service-item">
+          <div class="icon">💡</div>
+          <h3>Healthy Eating Tips</h3>
+          <p>Simple tips to improve your daily nutrition habits.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Carousel functionality
+    const slides = document.querySelectorAll('.slide');
+    let index = 0;
+
+    document.querySelector('.next').addEventListener('click', () => {
+      slides[index].classList.remove('active');
+      index = (index + 1) % slides.length;
+      slides[index].classList.add('active');
+    });
+
+    document.querySelector('.prev').addEventListener('click', () => {
+      slides[index].classList.remove('active');
+      index = (index - 1 + slides.length) % slides.length;
+      slides[index].classList.add('active');
+    });
+
+    // Chat form logic
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
+
+ function addMessage(content, className) {
   const msg = document.createElement("div");
   msg.className = "message " + className;
 
-  if (className === "bot") {
-    const avatar = document.createElement("img");
-    avatar.src = "/static/images.jpg";
-    msg.appendChild(avatar);
-  }
-
-  // Split long responses into paragraphs
-  const parts = content.split(/\n+/); // split by newlines
-  parts.forEach(part => {
-    const text = document.createElement("p");
-    text.textContent = part.trim();
-    msg.appendChild(text);
-  });
+  // Render HTML directly
+  msg.innerHTML = content;
 
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 
-  async function sendMessage() {
-    const text = userInput.value.trim();
-    if (!text) return;
-    addMessage(text, "user");
-    userInput.value = "";
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = input.value;
+      addMessage(message, "user-msg");
+      input.value = "";
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
-      });
-      const data = await response.json();
+      // Show loading bubble
+      const loading = document.createElement("div");
+      loading.className = "message loading-msg";
+      loading.innerHTML = `<div class="spinner"></div><span>Please wait, I am preparing the results...</span>`;
+      chatBox.appendChild(loading);
+      chatBox.scrollTop = chatBox.scrollHeight;
 
-      if (data.reply) {
-        addMessage("Dora: " + data.reply, "bot");
-      } else if (data.error) {
-        addMessage("Dora: Error - " + data.error, "bot");
-      } else {
-        addMessage("Dora: Sorry, I couldn’t process that request.", "bot");
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+
+        // Remove loading bubble
+        chatBox.removeChild(loading);
+
+        // Show bot reply (HTML formatted)
+        addMessage(data.reply, "bot-msg");
+      } catch (err) {
+        chatBox.removeChild(loading);
+        addMessage("⚠️ Error: " + err.message, "bot-msg");
       }
-    } catch (err) {
-      addMessage("Dora: Error - " + err.message, "bot");
-    }
-  }
-
-  sendBtn.addEventListener("click", sendMessage);
-  // Allow pressing Enter to send message
-userInput.addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    event.preventDefault(); // prevent newline
-    sendMessage();
-  }
-});
-
-</script>
+    });
+  </script>
 </body>
 </html>
